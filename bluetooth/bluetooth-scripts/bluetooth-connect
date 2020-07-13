@@ -1,12 +1,12 @@
 #!/usr/bin/python
-# This sript runs, when your pi disconnects from a bluetooth device and BLUETOOTH_DISCONNECT is set to anything.
+# This sript runs, when your pi connects to a bluetooth device and BLUETOOTH_SCRIPTS is set to true.
 # You can add your own code. BalenaSound has gpiozero installed so you can work with it.
 # Here is a example:
 
 # from gpiozero import LED
 # from time import sleep
 
-# led = LED(17)
+# led = LED(16)
 
 # led.off()
 # sleep(1)

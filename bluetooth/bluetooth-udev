@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
 export DBUS_SYSTEM_BUS_ADDRESS=unix:path=/host/run/dbus/system_bus_socket
 
 name=$(sed 's/\"//g' <<< $NAME)
@@ -26,12 +27,13 @@ add)
     fi
     ;;
 remove)
+    printf "discoverable off\npairable off\nexit\n" | bluetoothctl
+
     amixer -M sset PCM,0 $CONNECTION_NOTIFY_VOLUME% > /dev/null &
     amixer -M sset Digital,0 $CONNECTION_NOTIFY_VOLUME% > /dev/null &
 
     aplay -D hw:0,0 /usr/src/sounds/disconnect.wav > /dev/null 2>&1
     
-    printf "discoverable on\npairable on\nexit\n" | bluetoothctl
     amixer -M sset PCM,0 $SYSTEM_OUTPUT_VOLUME% > /dev/null &
     amixer -M sset Digital,0 $SYSTEM_OUTPUT_VOLUME% > /dev/null &
 	if [[ -z "$BLUETOOTH_SCRIPTS" ]]; then

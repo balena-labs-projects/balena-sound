@@ -52,10 +52,12 @@ fi
 
 sleep 2
 rm -rf /var/run/bluealsa/
-/usr/bin/bluealsa -i hci0 -p a2dp-sink &
+/usr/bin/bluealsa -i hci0 -p a2dp-sink --a2dp-volume &
 
 hciconfig hci1 down > /dev/null 2>&1 # Disable onboard bluetooth if using a bluetooth dongle (onboard interface gets remapped to hci1) 
+
 hciconfig hci0 up
+
 hciconfig hci0 name "$DEVICE_NAME"
 
 if ! [ -z "$BLUETOOTH_PIN_CODE" ] && [[ $BLUETOOTH_PIN_CODE -gt 1 ]] && [[ $BLUETOOTH_PIN_CODE -lt 1000000 ]]; then
@@ -66,6 +68,10 @@ else
   printf "Starting bluetooth agent in Secure Simple Pairing Mode (SSPM) - No PIN code provided or invalid\n"
 fi
 
+if [[ ! -z "$DISABLE_AUTO_DISCOVERY" ]]; then
+  printf "discoverable off\npairable off\nexit\n" | bluetoothctl > /dev/null
+fi
+
 # Reconnect if there is a known device
 sleep 2
 if [ -f "/var/cache/bluetooth/reconnect_device" ]; then
@@ -74,7 +80,40 @@ if [ -f "/var/cache/bluetooth/reconnect_device" ]; then
   printf "connect %s\nexit\n" "$TRUSTED_MAC_ADDRESS" | bluetoothctl > /dev/null
 fi
 
+# Start gpio bluetooth control service
+if [[ -z "$DISABLE_BLUETOOTH_CONTROL" ]]; then
+  VOLUME_UP_GPIO="${VOLUME_UP_GPIO:-17}"
+  echo $VOLUME_UP_GPIO > /usr/src/volume_up_gpio
+  printf "Volume up button input is on GPIO$VOLUME_UP_GPIO \n"
+
+  BLUETOOTH_GPIO="${BLUETOOTH_GPIO:-27}"
+  echo $BLUETOOTH_GPIO > /usr/src/bluetooth_gpio
+  printf "Bluetooth button input is on GPIO$BLUETOOTH_GPIO \n"
+
+  VOLUME_DOWN_GPIO="${VOLUME_DOWN_GPIO:-22}"
+  echo $VOLUME_DOWN_GPIO > /usr/src/volume_down_gpio
+  printf "Volume down button input is on GPIO$VOLUME_DOWN_GPIO \n"
+  
+  NEXT_GPIO="${NEXT_GPIO:-10}"
+  echo $NEXT_GPIO > /usr/src/next_gpio
+  printf "Next track button input is on GPIO$NEXT_GPIO \n"
+  
+  PREVIOUS_GPIO="${PREVIOUS_GPIO:-9}"
+  echo $PREVIOUS_GPIO > /usr/src/previous_gpio
+  printf "Previous track button input is on GPIO$PREVIOUS_GPIO \n"
+  
+  OUTPUT_GPIO="${OUTPUT_GPIO:-11}"
+  echo $OUTPUT_GPIO > /usr/src/output_gpio
+  printf "A extra energy output is on GPIO$OUTPUT_GPIO \n"
+  
+  if [[ ! -z "CLOSE_DISCOVERY" ]]; then
+    touch /usr/src/close_discovery
+    printf "Bluetooth discovery will be deactivated if the device connects and bluetooth discovery got activated via gpio. \n"
+  fi
+  
+  bash /usr/src/bluetooth-control &
+fi
+
 sleep 2
 printf "Device is discoverable as \"%s\"\n" "$DEVICE_NAME"
-exec /usr/bin/bluealsa-aplay --pcm-buffer-time=1000000 00:00:00:00:00:00
-
+exec /usr/bin/bluealsa-aplay --profile-a2dp 00:00:00:00:00:00

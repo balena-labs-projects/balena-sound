@@ -1,4 +1,4 @@
-FROM balenalib/%%BALENA_MACHINE_NAME%%-debian:stretch
+FROM balenalib/raspberrypi3-debian:stretch
 
 ENV DBUS_SYSTEM_BUS_ADDRESS=unix:path=/host/run/dbus/system_bus_socket
 ENV UDEV=1
@@ -13,6 +13,10 @@ RUN install_packages \
 
 # Copy sounds
 COPY sounds /usr/src/sounds
+
+# Copy bluetooth-control script
+COPY bluetooth-control /usr/src/
+RUN chmod +x /usr/src/bluetooth-control
 
 # Setup udev rules - this lets us play the connect/disconnect sound,
 # turn off discover/pairing when a client is connected
@@ -32,3 +36,4 @@ RUN chmod +x /usr/src/start.sh
 COPY .asoundrc /root/.asoundrc
 
 CMD [ "/bin/bash", "/usr/src/start.sh" ]
+

@@ -1,7 +1,7 @@
 version: '2'
 services:
-  bluetooth-audio:
-    build: ./bluetooth-audio
+  bluetooth:
+    build: ./bluetooth
     restart: on-failure
     network_mode: host
     privileged: true

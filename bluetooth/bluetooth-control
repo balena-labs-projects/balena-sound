@@ -1,0 +1,160 @@
+#!/usr/bin/env bash
+
+# Set up variables
+VOLUME_UP_GPIO=$(</usr/src/volume_up_gpio)
+
+BLUETOOTH_GPIO=$(</usr/src/bluetooth_gpio)
+
+VOLUME_DOWN_GPIO=$(</usr/src/volume_down_gpio)
+
+NEXT_GPIO=$(</usr/src/next_gpio)
+
+PREVIOUS_GPIO=$(</usr/src/previous_gpio)
+
+OUTPUT_GPIO=$(</usr/src/output_gpio)
+
+TIMER="0"
+
+SKIP_STOP="0"
+
+BLUETOOTH_DISCOVERABLE="0"
+
+# Set up + volume
+if [[ ! -d /sys/class/gpio/gpio$VOLUME_UP_GPIO ]]; then
+  echo "$VOLUME_UP_GPIO" > /sys/class/gpio/export
+  sleep 1 
+fi
+echo "in" > /sys/class/gpio/gpio$VOLUME_UP_GPIO/direction
+
+# Set up bluetooth
+if [[ ! -d /sys/class/gpio/gpio$BLUETOOTH_GPIO ]]; then
+  echo "$BLUETOOTH_GPIO" > /sys/class/gpio/export
+  sleep 1 
+fi
+echo "in" > /sys/class/gpio/gpio$BLUETOOTH_GPIO/direction
+
+# Set up - volume
+if [[ ! -d /sys/class/gpio/gpio$VOLUME_DOWN_GPIO ]]; then
+  echo "$VOLUME_DOWN_GPIO" > /sys/class/gpio/export
+  sleep 1 
+fi
+echo "in" > /sys/class/gpio/gpio$VOLUME_DOWN_GPIO/direction
+
+# Set up next
+if [[ ! -d /sys/class/gpio/gpio$NEXT_GPIO ]]; then
+  echo "$NEXT_GPIO" > /sys/class/gpio/export
+  sleep 1 
+fi
+echo "in" > /sys/class/gpio/gpio$NEXT_GPIO/direction
+
+# Set up previous
+if [[ ! -d /sys/class/gpio/gpio$PREVIOUS_GPIO ]]; then
+  echo "$PREVIOUS_GPIO" > /sys/class/gpio/export
+  sleep 1 
+fi
+echo "in" > /sys/class/gpio/gpio$PREVIOUS_GPIO/direction
+
+# Set up utput gpio (there is one energy input missing)
+if [[ ! -d /sys/class/gpio/gpio$OUTPUT_GPIO ]]; then
+  echo "$OUTPUT_GPIO" > /sys/class/gpio/export
+  sleep 1 
+fi
+echo "out" > /sys/class/gpio/gpio$OUTPUT_GPIO/direction
+
+while : ; do
+
+while [[ "$(cat /sys/class/gpio/gpio$BLUETOOTH_GPIO/value)" == 1 ]]; do
+  if [[ "$TIMER" < 3 ]]; then
+    TIMER=$((TIMER+1))
+    sleep 1
+  fi
+done
+
+if [[ "$TIMER" == 3 ]]; then
+  if [[ ! -a /usr/src/is_discoverable ]]; then
+    printf "Making the device for 3 min discoverable. \n"
+    printf "discoverable on\npairable on\nexit\n" | bluetoothctl > /dev/null
+    touch /usr/src/is_discoverable
+    (sleep 180 ; printf "Closing bluetooth discovery. \n" ; printf "discoverable off\npairable off\nexit\n" | bluetoothctl > /dev/null ; rm /usr/src/is_discoverable) &
+  else
+    printf "The device is already discoverable. \n"
+  fi
+fi
+
+if [ -a /var/cache/bluetooth/reconnect_device ]; then
+
+# Get the alsa name of the connected device
+DEVICE="$(echo "$(amixer -D bluealsa scontrols)" | sed -n " s,[^']*'\([^']*\).*,\1,p ")"
+
+# Get and parse the MAC Adress of the connected device
+MAC="$(cat /var/cache/bluetooth/reconnect_device)"
+MAC_PARSED="$(echo ${MAC//:/_})"
+# PLAYER_ADDRESS="$(echo "$(dbus-send --system --dest=org.bluez --print-reply /org/bluez/hci0/dev_$MAC_PARSED org.freedesktop.DBus.Properties.Get string:org.bluez.MediaControl1 string:Player)" | cut -d'"' -f 2)"
+
+if [[ ! -z "$(echo "$(amixer -D bluealsa scontrols)" | sed -n " s,[^']*'\([^']*\).*,\1,p ")" ]]; then
+
+# Volume up
+if [[ "$(cat /sys/class/gpio/gpio$VOLUME_UP_GPIO/value)" == 1 ]]; then
+  printf "Setting volume higher. \n"
+  amixer -D bluealsa sset "$DEVICE" 10%+
+  sleep 0.5
+fi
+
+if [[ "$TIMER" == 1 ]]; then
+  if [[ "$(dbus-send --system --dest=org.bluez --print-reply /org/bluez/hci0/dev_$MAC_PARSED/player0 org.freedesktop.DBus.Properties.Get string:org.bluez.MediaPlayer1 string:Status | cut -d'"' -f 2)" == *"playing"* ]]; then 
+    printf "Stoping music playback. \n"
+    dbus-send --system --dest=org.bluez --print-reply /org/bluez/hci0/dev_$MAC_PARSED/player0 org.bluez.MediaPlayer1.Pause
+  else
+    printf "Starting music playback. \n"
+    dbus-send --system --dest=org.bluez --print-reply /org/bluez/hci0/dev_$MAC_PARSED/player0 org.bluez.MediaPlayer1.Play
+  fi
+fi
+
+if [[ "$TIMER" == 2 ]]; then
+  if [[ "$(dbus-send --system --dest=org.bluez --print-reply /org/bluez/hci0/dev_$MAC_PARSED/player0 org.freedesktop.DBus.Properties.Get string:org.bluez.MediaPlayer1 string:Status | cut -d'"' -f 2)" == *"playing"* ]]; then
+    printf "Stoping music playback. \n"
+    dbus-send --system --dest=org.bluez --print-reply /org/bluez/hci0/dev_$MAC_PARSED/player0 org.bluez.MediaPlayer1.Pause
+  else
+    printf "Starting music playback. \n"
+    dbus-send --system --dest=org.bluez --print-reply /org/bluez/hci0/dev_$MAC_PARSED/player0 org.bluez.MediaPlayer1.Play
+  fi
+fi
+
+# Volume down
+if [[ "$(cat /sys/class/gpio/gpio$VOLUME_DOWN_GPIO/value)" == 1 ]]; then
+  printf "Setting volume lower. \n"
+  amixer -D bluealsa sset "$DEVICE" 10%-
+  sleep 0.5
+fi
+
+# Next track
+while [[ "$(cat /sys/class/gpio/gpio$NEXT_GPIO/value)" == 1 ]]; do
+  if [[ "$SKIP_STOP" == 0 ]]; then
+  printf "Playing the next track. \n"
+  dbus-send --system --dest=org.bluez --print-reply /org/bluez/hci0/dev_$MAC_PARSED/player0 org.bluez.MediaPlayer1.Next
+  sleep 0.5
+  fi
+  SKIP_STOP="1"
+done
+
+SKIP_STOP="0"
+
+# Previous track
+while [[ "$(cat /sys/class/gpio/gpio$PREVIOUS_GPIO/value)" == 1 ]]; do
+  if [[ "$SKIP_STOP" == 0 ]]; then
+  printf "Playing the previous track. \n"
+  dbus-send --system --dest=org.bluez --print-reply /org/bluez/hci0/dev_$MAC_PARSED/player0 org.bluez.MediaPlayer1.Previous
+  sleep 0.5
+  fi
+  SKIP_STOP="1"
+done
+
+SKIP_STOP="0"
+
+fi
+
+TIMER="0"
+
+fi
+
+done
