@@ -25,9 +25,9 @@ balenaSound supports a wide variety of DACs, but in an ever-growing market, chan
 
 Latest versions of balenaOS already ships with drivers for most, if not all, of the DACs available. The testing story, however, is different. It's not possible for us to test all of them individually as it would take an incredible amount of resources. For this reason, we rely on community contributions to help catalogue existing DACs into three categories:
 
-- [Supported DACs](#Supported-DACs): battle-tested, known to work with balenaSound.
-- [Untested DACs](#Untested-DACs): DACs whose drivers are included in balenaOS but haven't been tested with balenaSound (most likely because no balena team member has one).
-- [Unsupported DACs](#Unsupported-DACs): DACs that probably need additional drivers that aren't currently available in balenaOS.
+- [Supported DACs](#supported-dacs): battle-tested, known to work with balenaSound.
+- [Untested DACs](#untested-dacs): DACs whose drivers are included in balenaOS but haven't been tested with balenaSound (most likely because no balena team member has one).
+- [Unsupported DACs](#unsupported-dacs): DACs that probably need additional drivers that aren't currently available in balenaOS.
 
 A curated list for all three categories can be found in the sections below. If you don't find your DAC anywhere, please add a comment to [this](https://github.com/balena-labs-projects/balena-sound/issues/439) GitHub issue and we'll take a look for you.
 

@@ -17,7 +17,7 @@ Ensure that:
 - You correctly plugged an audio or HDMI cable to your device
 - You are connected to the device and streaming audio to it via any of the supported alternatives
 
-If you are using a DAC, make sure your DAC is on the supported list [here](audio-interfaces#dac-boards) and that you applied the required configuration changes. If your DAC is not on the list, please let us know by opening an [issue](https://github.com/balena-labs-projects/balena-sound/issues/new). We will work with you to find the correct configuration and add the DAC to the supported list.
+If you are using a DAC, make sure your DAC is on the supported list [here](audio-interfaces#supported-dacs) and that you applied the required configuration changes. If your DAC is not on the list, please let us know by opening an [issue](https://github.com/balena-labs-projects/balena-sound/issues/new). We will work with you to find the correct configuration and add the DAC to the supported list.
 
 ### Audio cuts or is very stuttery
 
