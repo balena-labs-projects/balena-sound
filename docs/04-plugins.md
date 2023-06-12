@@ -25,6 +25,18 @@ Spotify Connect requires a premium account. There is two methods of authenticati
 
 Manual authentication will let you stream audio over the internet from a client that is on a different network than the balenaSound device. This is useful if your balenaSound device is on a separate WiFi network that's harder to reach (e.g. a backyard network).
 
+### Plexamp
+
+The headless Plexamp plugin allows for casting to the fleet from the Plex(amp) mobile/desktop/web apps. A Plex Pass is required to use this plugin.
+
+You need to log in before using this plugin, to do that, make sure the plugin has started and spawn a terminal into the container.
+Once you have a terminal, run the following command:
+```bash
+bash login.sh
+```
+Plexamp will prompt you for a claim token from [plex.tv/claim](https://www.plex.tv/claim/) and a player name, this name is the name that will show in the Plex(amp) app.
+Once you have logged in and set a player name, you can exit out of the terminal (you may need to press control+c if plex starts) and restart the Plexamp plugin.
+
 ## Installable
 
 The following plugins are available to be added to your balenaSound installation:

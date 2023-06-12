@@ -2,6 +2,7 @@ version: "2"
 
 volumes:
   spotifycache:
+  plex_settings:
 
 services:
   # Core services
@@ -72,3 +73,13 @@ services:
       io.balena.features.supervisor-api: 1
     environment:
       SET_HOSTNAME: balena
+      
+  plex: 
+    build: ./plugins/plex
+    restart: on-failure
+    privileged: true
+    network_mode: host
+    ports:
+      - 32500:32500
+    volumes:
+      - plex_settings:/root/.local/share/Plexamp

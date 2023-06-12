@@ -1,0 +1,16 @@
+FROM balenalib/%%BALENA_MACHINE_NAME%%-node:16.18.1
+
+
+RUN install_packages wget bzip2 jq
+
+# Audio block setup
+ENV PULSE_SERVER=tcp:localhost:4317
+RUN curl -sL https://raw.githubusercontent.com/balenablocks/audio/master/scripts/alsa-bridge/debian-setup.sh | bash -s y
+
+WORKDIR /opt/plexamp
+ADD *.sh /opt/plexamp/
+
+RUN chmod +x start.sh
+RUN chmod +x plexamp-setup.sh && ./plexamp-setup.sh
+
+ENTRYPOINT /opt/plexamp/start.sh
