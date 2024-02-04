@@ -65,7 +65,7 @@ balenaSound has been re-designed to easily allow integration with audio streamin
 | Bluetooth       | balena [bluetooth](https://github.com/balenablocks/bluetooth/) and [audio](https://github.com/balenablocks/audio) blocks                                                                                                                                                                        |
 | Soundcard input | Experimental support through the balena [audio](https://github.com/balenablocks/audio) block. Check the [customization](customization#plugins) section to learn how to enable it.                                                                                                               |
 
-If your desired audio source is not supported feel free to [reach out](support#contact-us) and leave us a comment. We've also considerably simplified the process of adding new plugins, so [PR's are welcome](https://github.com/balena-labs-projects/balena-sound/blob/master/CONTRIBUTING.md) too (be be sure to check out our balenaSound [architecture](https://github.com/balena-labs-projects/balena-sound/blob/master/ARCHITECTURE.md) guide)!
+If your desired audio source is not supported feel free to [reach out](support#contact-us) and leave us a comment. We've also considerably simplified the process of adding new plugins, so [PR's are welcome](https://github.com/balena-labs-projects/balena-sound/blob/master/CONTRIBUTING.md) too (be be sure to check out our balenaSound [architecture](https://github.com/balena-labs-projects/balena-sound/blob/master/docs/ARCHITECTURE.md) guide)!
 
 ## Audio interfaces
 
