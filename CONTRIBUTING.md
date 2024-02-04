@@ -5,7 +5,7 @@ balenaSound was created as a [hack friday](https://www.balena.io/blog/hack-frida
 
 ## Overview
 
-Make sure you checkout our [architecture][../contributing/architecture] guide, which aims to explain how all pieces fit together. It's a good starting point for understanding how we designed and built balenaSound. 
+Make sure you checkout our [architecture][./docs/ARCHITECTURE.md] guide, which aims to explain how all pieces fit together. It's a good starting point for understanding how we designed and built balenaSound. 
 
 Another way to improve how you use and contribute to balenaSound is to take our [masterclasses](https://www.balena.io/docs/learn/more/masterclasses/overview/). Each lesson is a self-contained, deep walk-through on core skills to be successful with your next edge project. Check them out at our [docs](https://www.balena.io/docs/learn/more/masterclasses/overview/).
 
