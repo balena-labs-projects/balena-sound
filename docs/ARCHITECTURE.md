@@ -1,6 +1,6 @@
 # Architecture
 
-Community contributions have been a staple of this open source project since its inception. However, as balenaSound grew in features it also grew in terms of complexity. It's currently a multi-container app with four core services and as many plugin services. This documentation section aims to provide an overview of balenaSound's architecture, with the intention of lowering the barrier to entry for folks out there wanting to contribute. If you are interested in contributing and after reading this guide you still have questions please [reach out](../docs/support#contact-us) and we'll gladly help.
+Community contributions have been a staple of this open source project since its inception. However, as balenaSound grew in features it also grew in terms of complexity. It's currently a multi-container app with four core services and as many plugin services. This documentation section aims to provide an overview of balenaSound's architecture, with the intention of lowering the barrier to entry for folks out there wanting to contribute. If you are interested in contributing and after reading this guide you still have questions please [reach out](support#contact-us) and we'll gladly help.
 
 ## Overview
 

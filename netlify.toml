@@ -1,6 +1,0 @@
-# Temporary redirects which can change in the future
-[[redirects]]
-  from = "/meetup"
-  to = "https://www.eventbrite.com/e/balensound-anniversary-meet-up-tickets-296582766037"
-  status = 302
-  force = true
